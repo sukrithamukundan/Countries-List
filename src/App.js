@@ -1,5 +1,5 @@
-import React from "react";
-import { Container,Form } from "react-bootstrap";
+import React, { Component } from "react";
+import { Container,Form,Card } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const GET_COUNTRY = `{
@@ -63,9 +63,10 @@ function App() {
   }, [country]);
   console.log(setDetails);
   return (
-    <div>
-      <h1>Country List</h1>
-      <select
+    <Container>
+      <h1 className="text-center">Country Directory</h1>
+      <div className="col-6 mx-auto ">
+      <Form.Select
         value={country}
         onChange={(event) => setCountry(event.target.value)}
       >
@@ -75,10 +76,24 @@ function App() {
             {country.name}
           </option>
         ))}
-      </select>
-      <h1>{country}</h1>
-      <h1>{details.name}</h1>
-    </div>
+      </Form.Select>
+      
+      <Card border="dark" className="mt-5">
+        <Card.Header>Country Info</Card.Header>
+        <Card.Body>
+          <Card.Title>{details.name}</Card.Title>
+          
+          <Card.Text>
+          <p><b>Country code :</b>  &nbsp;&nbsp;&nbsp; {details.code}</p>
+          <p><b>Native :</b>  &nbsp;&nbsp;&nbsp; {details.native}</p>
+          <p><b>Currency:</b>  &nbsp;&nbsp;&nbsp; {details.currency}</p>
+          <p><b>Phone code :</b>  &nbsp;&nbsp;&nbsp; {details.phone}</p>
+          
+          </Card.Text>
+        </Card.Body>
+      </Card>
+      </div>
+    </Container>
   );
 }
 
