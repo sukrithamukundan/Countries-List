@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Container,Form,Card } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Form, Card, Row } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const GET_COUNTRY = `{
   countries {
@@ -29,7 +29,7 @@ const GET_COUNTRY_DETAILS = `
 function App() {
   const [countrylist, setCountrylist] = React.useState([]);
   const [country, setCountry] = React.useState();
-  const [countryloading,setCountryloading]=React.useState(false);
+  const [countryloading, setCountryloading] = React.useState(false);
   const [details, setDetails] = React.useState({
     name: "",
     code: "",
@@ -39,9 +39,9 @@ function App() {
     phone: "",
     languages: [],
   });
-  function getDetails(data){
+  function getDetails(data) {
     setDetails(data.data.country);
-    setCountryloading(true)
+    setCountryloading(true);
   }
 
   React.useEffect(() => {
@@ -64,47 +64,98 @@ function App() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => (getDetails(data)));
+      .then((data) => getDetails(data));
   }, [country]);
-  console.log(details)
+  console.log(details);
   console.log(details.languages);
   return (
     <Container>
-      <h1 className="text-center">Country Directory</h1>
+      <h1 className="text-center my-5">Country Directory</h1>
       <div className="col-6 mx-auto ">
-      <Form.Select
-        value={country}
-        onChange={(event) => setCountry(event.target.value)}
-      >
-      <option>--Select Country--</option>
-        {countrylist.map((country) => (
-          <option key={country.code} value={country.code}>
-            {country.name}
-          </option>
-        ))}
-      </Form.Select>
-      <div>{countryloading ? <Card border="dark" className="mt-5">
-        <Card.Header>{details.name}</Card.Header>
-        <Card.Body>
-          
-          <Card.Text>
-          <p><b>Country code  &nbsp;&nbsp;&nbsp; : { details.code}</b> </p>
-          <p><b>Native   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: { details.native}</b> </p>
-          <p><b>Currency &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: { details.currency}</b> </p>
-          <p><b>Phone code   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          : { details.phone}</b></p>
-           <p><b>Languages</b>  &nbsp;&nbsp;&nbsp;</p>
-            { details.languages.map((lang) => (
-          <p key={lang.code}><b>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;: { lang.name}</b>
-          </p>
-        ))}
-          
-          
-          </Card.Text>
-        </Card.Body>
-      </Card> :<h1></h1>}</div>
-      
+        <Form.Select
+          value={country}
+          onChange={(event) => setCountry(event.target.value)}
+        >
+          <option>--Select Country--</option>
+          {countrylist.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.name}
+            </option>
+          ))}
+        </Form.Select>
+        <div>
+          {countryloading ? (
+            <Card border="dark" className="mt-5">
+              <Card.Header>Country Info</Card.Header>
+              <Card.Body>
+                <Card.Text>
+                <Row>
+                    <div className="col-6">
+                      <h6>Name</h6>
+                    </div>
+                    <div className="col-6">
+                      <p>
+                        <h6>: {details.name}</h6>
+                      </p>
+                    </div>
+                  </Row>
+                  <Row>
+                    <div className="col-6">
+                      <h6>Country code</h6>
+                    </div>
+                    <div className="col-6">
+                      <p>
+                        <h6>: {details.code}</h6>
+                      </p>
+                    </div>
+                  </Row>
+                  <Row>
+                    <div className="col-6">
+                      <h6>Native</h6>
+                    </div>
+                    <div className="col-6">
+                      <p>
+                        <h6>: {details.native}</h6>
+                      </p>
+                    </div>
+                  </Row>
+                  <Row>
+                    <div className="col-6">
+                      <h6>Currency</h6>
+                    </div>
+                    <div className="col-6">
+                      <p>
+                        <h6>: {details.currency}</h6>
+                      </p>
+                    </div>
+                  </Row>
+                  <Row>
+                    <div className="col-6">
+                      <h6>Phone code</h6>
+                    </div>
+                    <div className="col-6">
+                      <p>
+                        <h6>: {details.phone}</h6>
+                      </p>
+                    </div>
+                  </Row>
+                  <Row>
+                    <div className="col-6">
+                      <h6>Languages</h6>
+                    </div>
+                    <div className="col-6">
+                    {details.languages.map((lang) => (
+                    <h6 key={lang.code}>: {lang.name}</h6>
+                  ))}
+                    </div>
+                  </Row>
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          ) : (
+            <h1></h1>
+          )}
+        </div>
       </div>
     </Container>
   );
