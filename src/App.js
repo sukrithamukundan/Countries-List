@@ -1,47 +1,85 @@
-import React, {useState} from 'react';
-import  {Component} from 'react';
-import ReactDOM from 'react-dom';
-import {ApolloClient, InMemoryCache, gql, useQuery} from '@apollo/client';
+import React from "react";
+import { Container,Form } from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-// initialize a GraphQL client
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  uri: 'https://countries.trevorblades.com'
-});
-
-// write a GraphQL query that asks for names and codes for all countries
-const LIST_COUNTRIES = gql`
-  {
-    countries {
+const GET_COUNTRY = `{
+  countries {
       name
       code
+    }
+}`;
+
+const GET_COUNTRY_DETAILS = `
+  query Country($countryCode: ID!) {
+    country(code: $countryCode) {
+      code
+      name
+      native
+      emoji
+      currency
+      phone
+      languages {
+        code
+        name
+      }
     }
   }
 `;
 
+function App() {
+  const [countrylist, setCountrylist] = React.useState([]);
+  const [country, setCountry] = React.useState();
+  const [details, setDetails] = React.useState({
+    name: "",
+    code: "",
+    native: "",
+    emoji: "",
+    currency: "",
+    phone: "",
+    language: [{ code: "", name: "" }],
+  });
 
-  
-// create a component that renders a select input for coutries
-function CountrySelect() {
-  const [country, setCountry] = useState();
-  const {data, loading, error} = useQuery(LIST_COUNTRIES, {client});
+  React.useEffect(() => {
+    fetch("https://countries.trevorblades.com/graphql/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: GET_COUNTRY }),
+    })
+      .then((response) => response.json())
+      .then((data) => setCountrylist(data.data.countries));
+  }, []);
 
-  if (loading || error) {
-    return <p>{error ? error.message : 'Loading...'}</p>;
-  }
+  React.useEffect(() => {
+    fetch("https://countries.trevorblades.com/graphql/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: GET_COUNTRY_DETAILS,
+        variables: { countryCode: country },
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => setDetails(data.data.country));
+  }, [country]);
+  console.log(setDetails);
   return (
     <div>
-    <select value={country} onChange={event => setCountry(event.target.value)}>
-      {data.countries.map(country => (
-        <option key={country.code} value={country.code}>
-          {country.name}
-        </option>
-      ))}
-    </select>
-    <h1>{country}</h1>
+      <h1>Country List</h1>
+      <select
+        value={country}
+        onChange={(event) => setCountry(event.target.value)}
+      >
+      <option>--Select Country--</option>
+        {countrylist.map((country) => (
+          <option key={country.code} value={country.code}>
+            {country.name}
+          </option>
+        ))}
+      </select>
+      <h1>{country}</h1>
+      <h1>{details.name}</h1>
     </div>
   );
 }
 
-export default CountrySelect;
+export default App;
