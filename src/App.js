@@ -29,6 +29,7 @@ const GET_COUNTRY_DETAILS = `
 function App() {
   const [countrylist, setCountrylist] = React.useState([]);
   const [country, setCountry] = React.useState();
+  const [countryloading,setCountryloading]=React.useState(false);
   const [details, setDetails] = React.useState({
     name: "",
     code: "",
@@ -36,8 +37,12 @@ function App() {
     emoji: "",
     currency: "",
     phone: "",
-    language: [{ code: "", name: "" }],
+    languages: [],
   });
+  function getDetails(data){
+    setDetails(data.data.country);
+    setCountryloading(true)
+  }
 
   React.useEffect(() => {
     fetch("https://countries.trevorblades.com/graphql/", {
@@ -59,9 +64,10 @@ function App() {
       }),
     })
       .then((response) => response.json())
-      .then((data) => setDetails(data.data.country));
+      .then((data) => (getDetails(data)));
   }, [country]);
-  console.log(setDetails);
+  console.log(details)
+  console.log(details.languages);
   return (
     <Container>
       <h1 className="text-center">Country Directory</h1>
@@ -77,21 +83,28 @@ function App() {
           </option>
         ))}
       </Form.Select>
-      
-      <Card border="dark" className="mt-5">
-        <Card.Header>Country Info</Card.Header>
+      <div>{countryloading ? <Card border="dark" className="mt-5">
+        <Card.Header>{details.name}</Card.Header>
         <Card.Body>
-          <Card.Title>{details.name}</Card.Title>
           
           <Card.Text>
-          <p><b>Country code :</b>  &nbsp;&nbsp;&nbsp; {details.code}</p>
-          <p><b>Native :</b>  &nbsp;&nbsp;&nbsp; {details.native}</p>
-          <p><b>Currency:</b>  &nbsp;&nbsp;&nbsp; {details.currency}</p>
-          <p><b>Phone code :</b>  &nbsp;&nbsp;&nbsp; {details.phone}</p>
+          <p><b>Country code  &nbsp;&nbsp;&nbsp; : { details.code}</b> </p>
+          <p><b>Native   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: { details.native}</b> </p>
+          <p><b>Currency &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: { details.currency}</b> </p>
+          <p><b>Phone code   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          : { details.phone}</b></p>
+           <p><b>Languages</b>  &nbsp;&nbsp;&nbsp;</p>
+            { details.languages.map((lang) => (
+          <p key={lang.code}><b>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;: { lang.name}</b>
+          </p>
+        ))}
+          
           
           </Card.Text>
         </Card.Body>
-      </Card>
+      </Card> :<h1></h1>}</div>
+      
       </div>
     </Container>
   );
